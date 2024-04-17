@@ -1,0 +1,8 @@
+.form {
+  border: 1px solid rgb(4, 3, 58);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 16px;
+}
