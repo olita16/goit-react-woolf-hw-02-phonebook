@@ -1,17 +1,12 @@
 import css from '../ContactListItem/ContactListItem.module.css';
-import PropTypes from 'prop-types';
 
-const ContactListItem = ({ contact, children }) => {
-  return (
-    <li className={css.listItem}>
-      {contact.name} : {contact.number} {children}
-    </li>
-  );
-};
-
-ContactListItem.propTypes = {
-  contact: PropTypes.object,
-  children: PropTypes.element,
-};
+const ContactListItem = ({ name, number, onDelete }) => (
+  <li className={css.contactListItem}>
+    {name}: {number}
+    <button className={css.deleteButton} type="button" onClick={onDelete}>
+      Delete
+    </button>
+  </li>
+);
 
 export default ContactListItem;

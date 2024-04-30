@@ -1,72 +1,81 @@
 import css from './App.module.css';
 import { Component } from 'react';
-import HeadText from './Title/Title';
-import ContactsList from './ContactList/ContactList';
-import PhonebookForm from './PhonebookForm/PhonebookForm';
-import LabelInput from './Input/Input';
+import ContactList from './ContactList/ContactList';
+import ContactForm from './ContactForm/ContactForm';
 import NoContactsMessage from './Message/Message';
+import Filter from '../components/Filter/Filter';
 
-export class App extends Component {
+class App extends Component {
   state = {
     contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+      { id: 'id-1', name: 'Anie Copeland', number: '459-12-56' },
+      { id: 'id-2', name: 'Rosie Sipson', number: '443-89-12' },
+      { id: 'id-3', name: 'Hermione Cline', number: '645-17-79' },
+      { id: 'id-4', name: 'Eden Clements', number: '227-91-26' },
     ],
     filter: '',
   };
 
-  filterContacts() {
-    return this.state.contacts.filter(contact => {
-      return contact.name
-        .toLowerCase()
-        .startsWith(this.state.filter.toLowerCase());
-    });
-  }
+  addContact = ({ name, number }) => {
+    if (this.state.contacts.find(contact => contact.name === name)) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
 
-  handleInputChangeFilter = e => {
-    this.setState({ [e.target.name]: e.target.value });
-    this.filterContacts();
+    this.setState(({ contacts }) => ({
+      contacts: [
+        {
+          id: (Math.random() * 1000).toFixed(32),
+          name,
+          number,
+        },
+        ...contacts,
+      ],
+    }));
   };
 
-  setAppState = obj => {
-    this.setState(obj);
+  deleteContact = contactId => {
+    this.setState(({ contacts }) => ({
+      contacts: contacts.filter(contact => contact.id !== contactId),
+    }));
   };
 
-  deleteContactById(id, contacts, setAppState) {
-    const filteredArr = contacts.filter(contact => {
-      return contact.id !== id;
-    });
-    setAppState({ contacts: filteredArr, filter: '' });
-  }
+  changeFilter = event => {
+    this.setState({ filter: event.currentTarget.value });
+  };
+
+  getVisibleContacts = () => {
+    const { contacts, filter } = this.state;
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
 
   render() {
+    const visibleContacts = this.getVisibleContacts();
+    const { contacts, filter } = this.state;
+
     return (
       <div className={css.container}>
-        <HeadText title="Phonebook" />
-        <PhonebookForm
-          contacts={this.state.contacts}
-          setAppState={this.setAppState}
-        />
-        <HeadText title="Contacts" />
-        <LabelInput
-          value={this.state.filter}
-          handleInputChange={this.handleInputChangeFilter}
-          type="text"
-          name="filter"
-          labelName="Find contacts by name"
-        />
-        {this.filterContacts().length ? (
-          <ContactsList
-            contacts={this.filterContacts()}
-            setAppState={this.setAppState}
-            deleteContactById={this.deleteContactById}
-          />
+        <h1 className={css.headText}>Phonebook</h1>
+        <ContactForm onSubmit={this.addContact} />
+        <h2 className={css.headText}>Contacts</h2>
+        <Filter value={filter} onChange={this.changeFilter} />
+        {contacts.length === 0 ? (
+          <p className={css.messageNotAdd}>
+            Your phonebook is empty. Add new contact
+          </p>
+        ) : visibleContacts.length === 0 ? (
+          <NoContactsMessage name={filter} />
         ) : (
-          <NoContactsMessage name={this.state.filter} />
+          <ContactList
+            contacts={visibleContacts}
+            onDeleteContact={this.deleteContact}
+          />
         )}
       </div>
     );
   }
 }
+
+export default App;
