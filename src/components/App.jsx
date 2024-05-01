@@ -17,10 +17,10 @@ class App extends Component {
   };
 
   addContact = ({ name, number }) => {
-    if (this.state.contacts.find(contact => contact.name === name)) {
-      alert(`${name} is already in contacts`);
-      return;
-    }
+  if (this.state.contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())) {
+  alert(`${name} is already in contacts`);
+  return;
+}
 
     this.setState(({ contacts }) => ({
       contacts: [
